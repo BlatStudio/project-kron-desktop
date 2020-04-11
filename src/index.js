@@ -1,4 +1,4 @@
-const {app, BrowserWindow, protocol} = require('electron');
+const {app, BrowserWindow, protocol, Menu} = require('electron');
 const path = require('path');
 
 let win;
@@ -24,8 +24,40 @@ function createWindow () {
     if (error) console.error('Failed to register protocol')
   })
 
+  let menu = Menu.buildFromTemplate([
+    {
+      label: 'Menu',
+      submenu: [
+        {type:'separator'},
+        {
+          label:'Quit Kron',
+          click() { 
+            app.quit() 
+          } 
+        }
+      ]
+    },
+    {
+      label: 'File',
+      submenu: [
+        {
+          label: 'Nova Promoção',
+          click() {
+            win.webContents.send('ping', 'whoooooooh!')
+          }
+        },
+        {label:'CoinMarketCap'},
+        {label:'Exit'}
+      ]
+    }
+  ])
+  Menu.setApplicationMenu(menu); 
+
   win = new BrowserWindow({
-    width: 1200, height: 720, transparent: false,
+    width: 1200, height: 720,
+    transparent: false,
+    // titleBarStyle: 'hiddenInset',
+    // frame: false,
     webPreferences: { // <--- (1) Additional preferences
       nodeIntegration: false,
       preload: `${__dirname}/preload.js` // <--- (2) Preload script
